@@ -1,0 +1,20 @@
+project:
+  type: website
+
+website:
+  title: "Valeria Vera Lagos"
+  navbar:
+    left:
+      - text: "About me"
+        file: index.qmd
+      - text: "CV"
+        href: https://valeriavla.github.io/portfolio/CV_ValeriaVera.pdf
+format:
+  html:
+    css: styles.css
+    theme: 
+    - zephyr
+    - custom.scss
+    toc: true
+    self-contained: true
+    code-fold: true

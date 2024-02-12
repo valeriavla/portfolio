@@ -1,0 +1,178 @@
+---
+title: "About me"
+---
+
+<p align="center">
+  <img src="val25.png">
+</p>
+
+<p align="center">
+  <a href="mailto:valveralagos@gmail.com"><img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/solid/envelope.svg" width="30" height="30"></a>
+  <a href="https://www.linkedin.com/in/valeriavla/"><img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/brands/linkedin.svg" width="30" height="30"></a>
+  <a href="https://github.com/valeriavla/"><img src="https://raw.githubusercontent.com/FortAwesome/Font-Awesome/6.x/svgs/brands/square-github.svg" width="30" height="30"></a>
+</p>
+
+
+As a current Data Science student, I am interested in human-centered AI solutions, particularly those involving Natural Language Processing (NLP) tasks such as sentiment analysis and text generation. I am also interested in data relating to technology. Additionally, as a former Intel software engineer, I have experience with hardware validation, including improving customer tools, troubleshooting memory issues, working with distributed systems, and researching and developing supervised and unsupervised machine learning applications for hardware data.
+
+<p align="center">
+
+```{python}
+import plotly.graph_objects as go
+import networkx as nx
+from collections import Counter
+from nltk import bigrams, word_tokenize
+from nltk.corpus import stopwords
+import re
+
+text = "Valeria Vera Washington, D.C. valveralagos@gmail.com LinkedIn Portfolio (+1) 2027181340 EDUCATION Master of Science in Data Science and Analytics 08/2022 – 05/2024 Georgetown University USA Elective courses: Natural Language Processing, Large Language Models, Reinforcement Learning, Optimization, Deep Learning Award: Fulbright-García Robles grant to pursue a graduate degree in the US Bachelor of Engineering in Information Technology - Cum Laude 08/2015 – 11/2020 Benemerita Universidad Autonoma de Puebla (BUAP) - Computer Science department Mexico Thesis: Misogyny detection through supervised classifiers, results presented at GCURS Symposium at Rice University Research visit: Natural Language Processing using Java at the University of Award: Nation’s best career development in Information Technology Award ANIEI WORK EXPERIENCE Graduate Technical Intern – Machine Learning 05/2023 – 08/2023 Intel Corporation Oregon, USA Automated data extraction from an Azure SQL database using Python and Kusto, lessening extraction time by 80% Performed data reduction, modeling, and correlation analysis for a 400,000 rows by 50,000 columns dataset Implemented unsupervised clustering techniques, evaluated similarity of clusters, and cut duplicated data by 60% Coded a Python-based website allowing users to obtain automatic clustering results decreasing analysis time by 90% Research Assistant 01/2023 – 05/2023 Center for Security and Emerging Technology D.C., USA Conducted an in-depth review of approximately 100 papers focused on explainability in AI systems Summarized and categorized the evaluation methodologies, benchmarks, and models adopted in the papers Software Development Engineer 01/2021 – 08/2022 Intel Corporation Jalisco, Mexico Collaborated on a test generation framework using Reinforcement Learning, decreasing test time by 40% Refactored a Python project legacy code reducing new costumer tools integration time by 60% Generated bash scripts for collecting hardware signals and communicating across more than 30 Unix cluster systems Debugged software and hardware memory issues in Linux systems in more than 20 Intel products Trained a supervised model that predicts electrical conditions variability, cutting analysis time by 92% Produced a Natural Language Processing solution that automates test content generation, reducing engineering time by 96% Published research results in the Design and Test Technology Conference (DTTC) 2022 and 2021 Software Validation Engineer Intern 12/2019–11/2020 Intel Corporation Jalisco, Mexico Automated test content creation through Python scripts that reduced development time by 85% Developed a Client-Server communication model on Python that reduced hardware expenses by 80% Designed a supervised model (SVM) for software bugs classification using Natural Language Processing on Python PROJECTS OpenDCDiag - Intel 02/2024 Conducted a statistical analysis of CPU defects and developed data collection scripts in C++ Toxicity analysis of large corpora using transformers 01/2024 Analyzed the impact of toxicity levels in large corpora across NLP tasks TPU performance prediction using Graph Neural Networks 08/2023 Optimized performance of Graph Neural Networks for TPU runtime prediction with Keras Walkability impact in D.C. 01/2023 Collected data with the Reddit API, classified sentiment using transformers, and created visualizations using Plotly and Javascript Revictimization: a misogyny detection problem 08/2022 Web scraped news articles with Python and finetuned a Large Language Model to detect revictimization with Pytorch Math learning support system for kids with ADHD 11/2019 Developed a WebApp using Unity based on serious games research. Presented at National Congress of Education Technologies CONTE SKILLS Programming skills: Object-Oriented Programming, Algorithms design, Design Patterns, Intel architecture, Git Programming languages: Python, Unix shell language, R, Java, C++, C, SQL Data packages: scikit-learn, numpy, pandas, matplotlib, plotly, keras, pytorch, spacy, huggingface Big data frameworks: Apache Spark, Hadoop Languages: Spanish: Native speaker, English: Full professional fluency"
+
+def clean_text(text):
+    lower_text = re.sub(r'[^a-zA-Z\s]', '', text.lower())
+    cv_stopwords= stopwords.words('english')
+    cv_stopwords.extend(["valveralagosgmailcom", "dc", "usa", "us", "jalisco", "mexico","oregon", "puebla", "texas"
+                  "universidad", "cum","laude", "benemerita", "autonoma", "de", "aniei", "robles"
+                   "washington", "valeria", "vera", "using", "university", "buap", "georgetown", "fulbrightgarca"])
+    pattern = re.compile(r'\b(' + r'|'.join(cv_stopwords) + r')\b\s*')
+    cleaned_text = pattern.sub('', lower_text)
+    return cleaned_text
+
+# Clean the text and tokenize
+cleaned_text = clean_text(text)
+words = word_tokenize(cleaned_text)
+
+# Generate bigrams
+bi_grams = list(bigrams(words))
+#bigram_counter = Counter(bi_grams)
+bigram_counter = Counter(dict(Counter(bi_grams).most_common(150)))
+# Create a graph object
+G = nx.Graph()
+
+# Add nodes and edges with weights from the bigram counter
+for bigram, weight in bigram_counter.items():
+    node1, node2 = bigram
+    G.add_edge(node1, node2, weight=weight)
+
+# Generate layout for the graph
+pos = nx.spring_layout(G)
+
+# Extract node positions
+node_x = []
+node_y = []
+for node, (x, y) in pos.items():
+    node_x.append(x)
+    node_y.append(y)
+
+# Define edges
+edge_x = []
+edge_y = []
+for edge in G.edges():
+    x0, y0 = pos[edge[0]]
+    x1, y1 = pos[edge[1]]
+    edge_x.extend([x0, x1, None])
+    edge_y.extend([y0, y1, None])
+
+# Create edge trace
+edge_trace = go.Scatter(
+    x=edge_x, y=edge_y,
+    line=dict(width=0.5, color='#888'),
+    hoverinfo='none',
+    mode='lines')
+
+# Create node trace
+node_trace = go.Scatter(
+    x=node_x, y=node_y,
+    mode='markers',
+    hoverinfo='text',
+    marker=dict(
+        showscale=True,
+        colorscale='Hot',
+        reversescale=True,
+        color=[],
+        size=10,
+        colorbar=dict(
+            thickness=15,
+            title='Words Connections',
+            xanchor='left',
+            titleside='right'
+        ),
+        line_width=2))
+
+# Assign node degrees as colors
+node_trace.marker.color = [len(G[node]) for node in G.nodes()]
+node_trace.text = [f'word: {node} <br>connections: {len(G[node])}' for node in G.nodes()]
+
+# Create figure
+fig = go.Figure(data=[edge_trace, node_trace],
+             layout=go.Layout(
+                title="Bigram's on CV relation graph",
+                titlefont_size=16,
+                showlegend=False,
+                hovermode='closest',
+                margin=dict(b=10,l=10,r=10,t=40),
+                xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                width=500,
+                height=400
+                
+                ),
+                )
+
+# Show figure
+fig.show()
+
+```
+
+*Figure: Bigrams (pair of words) relations contained on my CV*
+</p>
+<br>
+
+### Education
+* M.Sc. Data Science and Analytics, *Georgetown University, Fulbright scholar*
+* B.Eng. Information Technologies, *Benemérita Universidad Autónoma de Puebla, Cum Laude*
+
+### Experience
+
+#### Artificial Intelligence:
+* Deep Learning
+* Reinforcement Learning
+* Supervised and unsupervised Machine Learning
+* NLP and Large Language Models
+
+#### Computer Science:
+* Object-Oriented Programming
+* Algorithms design
+* Design patterns
+* Software and Hardware validation
+
+### Projects 
+
+**OpenDCDiag - Intel**
+<br>*WIP* <br>
+Contribute to the OpenDCDiag project by conducting a statistical analysis of CPU defects and developing data collection methods in C++.
+
+**Toxicity analysis of large corpora using transformers**
+<br>*WIP* <br>
+Analyze the impact of toxicity levels in large corpora across various NLP tasks and assess it using multiple LLMs.
+
+**[TPU performance prediction using Graph Neural Networks](https://valeriavl.georgetown.domains/tpu/)**
+<br>*2023*<br>
+Optimized performance of Graph Neural Networks for TPU runtime prediction with Keras.
+
+**[Walkability impact in D.C](https://valeriavl.georgetown.domains/503/)**
+<br>*2023*<br>
+Collected data with the Reddit API, classified data sentiment using transformers, and created visualizations using Plotly and Javascript.
+
+**[Revictimization: a misogyny detection problem](https://valeriavl.georgetown.domains/miso_articles/)** <br>*2022*<br>Web scrapped news articles with python and finetuned pre-trained Large Language Models to detect revictimization. 
+
+**[Misogyny Detection on Short Texts Through Supervised Classifiers](https://github.com/valeriavla/deteccion_misoginia)**
+<br>*2021*<br>
+Collected a dataset of tweets in Spanish labeled as "misogynistic or not". Used the set to train and evaluate multiple supervised classifiers and neural networks. Results presented at Gulf Coast Undergraduate Research Symposium at Rice University.
+
+**UVA MATE**
+<br>*2019*<br>
+Web App development in Unity based on the research of serious games for kids with ADHD. Results presented at National Congress of Education Technologies CONTE.
+
+### Volunteering 
+
+I volunteered in a variety of roles, including NLP and data analyst, Data Science Mentor, and Python instructor, for programs such as Google WT, Datakind, Looking Further, Women at Intel Network, and MIT "BP". If you have a project for a non-profit organization related to AI, please contact me for collaboration.
